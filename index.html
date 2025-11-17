@@ -1,0 +1,279 @@
+YPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Med School Explorer</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .container-shadow {
+            box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen flex items-center justify-center">
+
+    <div id="app" class="w-full max-w-4xl bg-white rounded-xl p-6 md:p-10 container-shadow">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-blue-800">Medical School Explorer</h1>
+            <p class="text-gray-600 mt-2">Discover profile, admissions stats, and departments for top medical programs.</p>
+        </header>
+
+        <!-- School Selection Dropdown -->
+        <div class="mb-8">
+            <label for="school-select" class="block text-lg font-semibold text-gray-700 mb-2">Select a Medical School:</label>
+            <select id="school-select" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white text-gray-800">
+                <option value="" disabled selected>-- Choose a school --</option>
+            </select>
+        </div>
+
+        <!-- School Details Display Area -->
+        <div id="school-details" class="bg-gray-50 p-6 rounded-xl border border-gray-200 hidden">
+            <!-- School Profile Card -->
+            <div class="mb-8">
+                <h2 id="school-name" class="text-2xl font-bold text-blue-700 mb-4 border-b pb-2"></h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                    <div class="bg-white p-4 rounded-lg border border-blue-100">
+                        <p class="text-gray-500 font-medium">Median GPA</p>
+                        <p id="median-gpa" class="text-2xl font-extrabold text-blue-600 mt-1"></p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border border-blue-100">
+                        <p class="text-gray-500 font-medium">Median MCAT</p>
+                        <p id="median-mcat" class="text-2xl font-extrabold text-blue-600 mt-1"></p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border border-blue-100">
+                        <p class="text-gray-500 font-medium">Acceptance Rate</p>
+                        <p id="acceptance-rate" class="text-2xl font-extrabold text-blue-600 mt-1"></p>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                    <p class="text-sm font-semibold text-blue-700">Program Strength:</p>
+                    <p id="strengths" class="text-gray-700 mt-1"></p>
+                </div>
+            </div>
+
+            <!-- Departments Section -->
+            <div>
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Academic & Clinical Departments</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Basic Sciences -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-green-700 mb-3 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9h2m-2 6h2m10-6h2m-2 6h2M7 12h10l4-8H3l4 8zm0 0l-2 5h14l-2-5H7z"></path></svg>
+                            Basic Sciences
+                        </h4>
+                        <ul id="basic-sciences" class="space-y-2 text-gray-700 list-disc list-inside bg-white p-4 rounded-lg border"></ul>
+                    </div>
+                    
+                    <!-- Clinical Departments -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-purple-700 mb-3 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 .895 3 2s-1.343 2-3 2-3-.895-3-2 1.343-2 3-2z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 15v2m6-2v2M4 15h16a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
+                            Clinical Departments & Specialties
+                        </h4>
+                        <ul id="clinical-departments" class="space-y-2 text-gray-700 list-disc list-inside bg-white p-4 rounded-lg border"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Firebase User ID Display (Required for persistence context) -->
+        <div id="user-status" class="mt-8 text-center text-xs text-gray-400">
+            <p>User ID: <span id="user-id">Loading...</span></p>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // IMPORTANT: Use environment variables for Firebase config and auth token
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db, auth;
+
+        // Data for Medical Schools
+        const medicalSchools = {
+            'harvard': {
+                name: 'Harvard Medical School',
+                location: 'Boston, MA',
+                gpa: '3.97',
+                mcat: '521',
+                acceptanceRate: '2.3%',
+                strengths: 'Renowned for research, global health initiatives, and integrating Artificial Intelligence (AI) into clinical practice and training.',
+            },
+            'johns_hopkins': {
+                name: 'Johns Hopkins University School of Medicine',
+                location: 'Baltimore, MD',
+                gpa: '3.97',
+                mcat: '521',
+                acceptanceRate: '2.1%',
+                strengths: 'A global leader in biomedical research and surgical specialties. Known for its "Genes to Society" curriculum and pioneering medical innovations.',
+            },
+            'stanford': {
+                name: 'Stanford University School of Medicine',
+                location: 'Stanford, CA',
+                gpa: '3.95',
+                mcat: '520',
+                acceptanceRate: '1.0%',
+                strengths: 'Tech-forward curriculum with strong ties to Silicon Valley biotech research. Excels in bioengineering, genetics, and medical innovation.',
+            },
+            'ucsf': {
+                name: 'UCSF School of Medicine',
+                location: 'San Francisco, CA',
+                gpa: '3.92',
+                mcat: '517',
+                acceptanceRate: '1.6%',
+                strengths: 'Highly ranked for excellence in primary care, internal medicine, and commitment to health equity and public service.',
+            }
+        };
+
+        // Static Department Data (simulated breadth of study)
+        const departments = {
+            basic: [
+                'Biochemistry & Molecular Biology',
+                'Cell & Developmental Biology',
+                'Molecular & Integrative Physiology',
+                'Pharmacology & Chemical Biology',
+                'Human Genetics',
+                'Microbiology & Immunology',
+                'Neurobiology'
+            ],
+            clinical: [
+                'Internal Medicine',
+                'Surgery (General, Cardio, Plastic)',
+                'Pediatrics',
+                'Psychiatry & Behavioral Sciences',
+                'Dermatology',
+                'Emergency Medicine',
+                'Radiology & Imaging Sciences',
+                'Orthopaedic Surgery',
+                'Neurology & Neurological Sciences',
+                'Obstetrics & Gynecology (OB/GYN)',
+                'Anesthesiology, Perioperative Care, and Pain Medicine',
+                'Ophthalmology'
+            ]
+        };
+
+        // Initialize Firebase and Authentication
+        async function initFirebase() {
+            if (!firebaseConfig) {
+                console.error("Firebase config is not available.");
+                return;
+            }
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                // Enable debug logging for Firestore
+                setLogLevel('debug');
+
+                const userStatusElement = document.getElementById('user-id');
+                
+                // Use onAuthStateChanged to manage user state
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userStatusElement.textContent = user.uid;
+                        console.log("Firebase signed in. User ID:", user.uid);
+                    } else {
+                        userStatusElement.textContent = "Anonymous (No Token)";
+                        console.log("Firebase is not signed in.");
+                    }
+                });
+
+                // Sign in using the custom token if available, otherwise sign in anonymously
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+            } catch (error) {
+                console.error("Error initializing or signing into Firebase:", error.message);
+                document.getElementById('user-id').textContent = `Error: ${error.message.substring(0, 50)}...`;
+            }
+        }
+
+        // Populate Dropdown
+        function populateDropdown() {
+            const select = document.getElementById('school-select');
+            for (const key in medicalSchools) {
+                const school = medicalSchools[key];
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = school.name;
+                select.appendChild(option);
+            }
+        }
+
+        // Render School Details
+        function renderSchoolDetails(schoolKey) {
+            const detailsElement = document.getElementById('school-details');
+            
+            if (!schoolKey || !medicalSchools[schoolKey]) {
+                detailsElement.classList.add('hidden');
+                return;
+            }
+
+            const school = medicalSchools[schoolKey];
+            
+            document.getElementById('school-name').textContent = `${school.name} (${school.location})`;
+            document.getElementById('median-gpa').textContent = school.gpa;
+            document.getElementById('median-mcat').textContent = school.mcat;
+            document.getElementById('acceptance-rate').textContent = school.acceptanceRate;
+            document.getElementById('strengths').textContent = school.strengths;
+
+            // Render Basic Sciences
+            const basicList = document.getElementById('basic-sciences');
+            basicList.innerHTML = '';
+            departments.basic.forEach(dept => {
+                const li = document.createElement('li');
+                li.textContent = dept;
+                basicList.appendChild(li);
+            });
+
+            // Render Clinical Departments
+            const clinicalList = document.getElementById('clinical-departments');
+            clinicalList.innerHTML = '';
+            departments.clinical.forEach(dept => {
+                const li = document.createElement('li');
+                li.textContent = dept;
+                clinicalList.appendChild(li);
+            });
+
+            detailsElement.classList.remove('hidden');
+        }
+
+        // Main Execution
+        window.onload = () => {
+            // 1. Initialize Firebase (must happen first)
+            initFirebase();
+            
+            // 2. Populate UI Data
+            populateDropdown();
+
+            // 3. Set up event listener for the dropdown
+            const select = document.getElementById('school-select');
+            select.addEventListener('change', (event) => {
+                renderSchoolDetails(event.target.value);
+            });
+        };
+
+    </script>
+</body>
+</html>
