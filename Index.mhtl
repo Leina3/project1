@@ -1,0 +1,134 @@
+DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accredited Medical School Selector</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font and base styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb; /* Light off-white background */
+        }
+        /* Custom styling for the dropdown */
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            /* Custom SVG arrow icon */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%234B5563'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem; /* Make room for the custom arrow */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-lg bg-white shadow-2xl rounded-xl p-8 space-y-8 border border-gray-100">
+
+        <!-- Header -->
+        <header class="text-center space-y-2">
+            <!-- Icon: Stethoscope -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-red-600 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M13 14h-2a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2z"/>
+                <path d="M12 14v4"/>
+                <path d="M10 18h4"/>
+                <path d="M15 12c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
+                <path d="M9 12c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3z"/>
+                <path d="M7 16h10"/>
+            </svg>
+            <h1 class="text-3xl font-extrabold text-gray-900">Accredited Medical School Selector</h1>
+            <p class="text-gray-600 text-base">Select an accredited M.D. (Allopathic) or D.O. (Osteopathic) program.</p>
+        </header>
+
+        <!-- Dropdown Form -->
+        <div class="space-y-4">
+            <label for="university-select" class="block text-lg font-medium text-gray-700">Choose a Medical School:</label>
+            <div class="relative">
+                <select id="university-select" name="university" 
+                        class="block w-full py-3 px-4 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900 transition duration-150 ease-in-out cursor-pointer text-base">
+                    <option value="" disabled selected>-- Select a school from the list --</option>
+                    
+                    <!-- MD (Allopathic) Schools -->
+                    <optgroup label="M.D. Programs">
+                        <option value="Harvard Medical School (MD)">Harvard Medical School (MD)</option>
+                        <option value="Johns Hopkins University School of Medicine (MD)">Johns Hopkins University School of Medicine (MD)</option>
+                        <option value="Stanford University School of Medicine (MD)">Stanford University School of Medicine (MD)</option>
+                        <option value="Yale School of Medicine (MD)">Yale School of Medicine (MD)</option>
+                        <option value="Duke University School of Medicine (MD)">Duke University School of Medicine (MD)</option>
+                        <option value="University of Pennsylvania Perelman School of Medicine (MD)">U. Penn. Perelman School of Medicine (MD)</option>
+                        <option value="Columbia University Vagelos P&S (MD)">Columbia University Vagelos P&S (MD)</option>
+                        <option value="David Geffen School of Medicine at UCLA (MD)">David Geffen School of Medicine at UCLA (MD)</option>
+                        <option value="Mayo Clinic Alix School of Medicine (MD)">Mayo Clinic Alix School of Medicine (MD)</option>
+                        <option value="Baylor College of Medicine (MD)">Baylor College of Medicine (MD)</option>
+                        <option value="University of Washington School of Medicine (MD)">U. Washington School of Medicine (MD)</option>
+                        <option value="Icahn School of Medicine at Mount Sinai (MD)">Icahn School of Medicine at Mount Sinai (MD)</option>
+                    </optgroup>
+
+                    <!-- DO (Osteopathic) Schools -->
+                    <optgroup label="D.O. Programs">
+                        <option value="A.T. Still University - Kirksville College of Osteopathic Medicine (DO)">A.T. Still KCOM (DO)</option>
+                        <option value="Lake Erie College of Osteopathic Medicine (LECOM) (DO)">Lake Erie College of Osteopathic Medicine (LECOM) (DO)</option>
+                        <option value="Des Moines University College of Osteopathic Medicine (DO)">Des Moines University COM (DO)</option>
+                        <option value="Rowan University School of Osteopathic Medicine (DO)">Rowan University School of Osteopathic Medicine (DO)</option>
+                        <option value="Michigan State University College of Osteopathic Medicine (DO)">Michigan State University COM (DO)</option>
+                        <option value="Ohio University Heritage College of Osteopathic Medicine (DO)">Ohio University Heritage COM (DO)</option>
+                        <option value="Western University of Health Sciences COM-Pacific (DO)">Western University of Health Sciences COM-Pacific (DO)</option>
+                        <option value="Kansas City University College of Osteopathic Medicine (DO)">Kansas City University COM (DO)</option>
+                        <option value="Pikeville Kentucky College of Osteopathic Medicine (DO)">Pikeville Kentucky COM (DO)</option>
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+
+        <!-- Selected Output Display -->
+        <!-- Changed color scheme to red/health theme -->
+        <div id="selection-output" class="p-6 bg-red-50 border-l-4 border-red-400 rounded-lg transition duration-300 ease-in-out h-20 flex items-center justify-center">
+            <p class="text-gray-500 italic text-center">Your selection will appear here.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const selectElement = document.getElementById('university-select');
+            const outputElement = document.getElementById('selection-output');
+
+            // Function to update the output box
+            const updateSelection = (schoolName) => {
+                if (schoolName) {
+                    outputElement.innerHTML = `
+                        <div class="flex flex-col items-center">
+                            <span class="text-xl font-semibold text-red-800">Selected School:</span>
+                            <span class="text-2xl md:text-3xl font-extrabold text-red-900 text-center mt-1">${schoolName}</span>
+                        </div>
+                    `;
+                    // Change background color slightly to confirm selection
+                    outputElement.classList.remove('bg-red-50');
+                    outputElement.classList.add('bg-red-100');
+                } else {
+                    // Reset to initial state
+                    outputElement.innerHTML = '<p class="text-gray-500 italic text-center">Your selection will appear here.</p>';
+                    outputElement.classList.remove('bg-red-100');
+                    outputElement.classList.add('bg-red-50');
+                }
+            };
+
+            // Event listener for dropdown change
+            selectElement.addEventListener('change', (event) => {
+                const selectedSchool = event.target.value;
+                updateSelection(selectedSchool);
+            });
+
+            // Check for initial selection (if navigating back)
+            if (selectElement.value) {
+                updateSelection(selectElement.value);
+            }
+        });
+    </script>
+
+</body>
+</html>
